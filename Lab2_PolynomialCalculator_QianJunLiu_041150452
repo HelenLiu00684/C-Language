@@ -1,0 +1,195 @@
+/*  
+ * Author: QianJunLiu
+ * Number: 041150452  
+ * Date: 16-02-2025  
+ * Course: CST8234 
+ * Project: Lab12  
+ */
+
+/*import Labrary */
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+/*decleration functions */
+void AddPolynomials(int **parray2D, int num1, int num2);
+void DisPolynomials(int **parray2D, int columnSize);
+void EvaPolynomials(int **parray2D, int columnSize);
+
+
+int main(void) {
+    int row,i;
+    int rowSize = 2; /*value at 2 for two polynomials*/ 
+    int **parray2D; /*delcaration point for 2D array*/ 
+    int num1, num2, columnSize;/*input two Polynomials numbers and set the maximum for column*/
+    char choice_char; /* Use char for reading characters*/
+    int flag=0;/*input value is valid*/
+
+    printf("Polynomial Calculator Menu:\n");
+    printf("1. Add Polynomials\n");
+    printf("2. Evaluate Polynomials\n");
+    printf("X. Exit\n");
+    printf("Enter your choice (1/2/X): ");
+
+   
+    scanf(" %c", &choice_char); /* input option as char type*/
+    
+    switch (choice_char) {
+        case '1':                        /* Use scanf input two values and check input is valid using looping checking. initialize 2D array using point */
+
+            while (flag != 1) {
+            printf("Enter the degree of the first polynomial: ");
+            scanf("%d", &num1);
+            printf("Enter the degree of the second polynomial: ");
+            scanf("%d", &num2);
+            if (num1 > 0 && num2 > 0) {
+                break;
+                }else{    
+                perror("Error:  Degree of a polynomial cannot be negative. Please enter a valid degree\n");
+                while (getchar() != '\n');
+                }
+            }
+            columnSize = (num1 > num2) ? num1 + 1 : num2 + 1; /*size = index +1*/ 
+
+            /* Allocate memory for row points*/
+            parray2D = (int **)malloc(rowSize * sizeof(int *));
+            if (parray2D == NULL) {
+                perror("parray2D Memory allocation failed");
+                exit(1); /* Exit with error*/
+            }
+            /* Allocate memory for column point, each column has columnSize*sizeof(int) unit*/
+            for (row = 0; row < rowSize; row++) {
+                parray2D[row] = (int *)malloc(columnSize * sizeof(int));
+                if (parray2D[row] == NULL) {
+                    perror("Parray2D[i] Memory allocation failed");
+                    exit(1);
+                }
+            }
+
+            AddPolynomials(parray2D, num1, num2); /* input value to 2D array*/
+            DisPolynomials(parray2D, columnSize); /* display value to 2D array*/
+            /* Free memory after is done*/
+            for (i = 0; i < rowSize; i++) {
+                free(parray2D[i]);
+            }
+            free(parray2D);
+
+            break;
+        case '2':
+             /* Use scanf input two values and check input is valid using looping checking. initialize 2D array using point and input the x value */
+            printf("Enter the degree of the first polynomial: ");
+            scanf("%d", &num1);
+            printf("Enter the degree of the second polynomial: ");
+            scanf("%d", &num2);
+            columnSize = (num1 > num2) ? num1 + 1 : num2 + 1;  /*size = index +1*/ 
+
+            /* Allocate memory for row points*/
+            parray2D = (int **)malloc(rowSize * sizeof(int *));
+            if (parray2D == NULL) {
+                perror("parray2D Memory allocation failed");
+                exit(1); /* Exit with error*/
+            }
+            /* Allocate memory for column point, each column has columnSize*sizeof(int) unit*/
+            for (row = 0; row < rowSize; row++) {
+                parray2D[row] = (int *)malloc(columnSize * sizeof(int));
+                if (parray2D[row] == NULL) {
+                    perror("Parray2D[i] Memory allocation failed");
+                    exit(1);
+                }
+            }
+
+            AddPolynomials(parray2D, num1, num2);
+            EvaPolynomials(parray2D, columnSize);/* input the value of X*/
+            break;
+        case 'x':
+        case 'X': /* Handle both lowercase and uppercase 'x'*/
+            exit(0);
+            break;
+        default:
+            printf("Invalid choice.\n");
+            break;
+    }
+
+    return 0; 
+}
+
+void AddPolynomials(int **parray2D, int num1, int num2) {
+    int row, i,ret=0;
+
+    row=0;
+    printf("Enter the coefficients for polynomial %d (from highest degree to constant term):\n", row);
+    for (i = 0; i < num1+1; i++) {
+        ret=0;
+        while (ret != 1) {          /* Check the input value is valid integer*/
+        printf("Enter coefficient of x^%d: ", num1 - i);
+        ret=scanf("%d", &parray2D[row][num1 - i]);
+        if (ret != 1) {
+            printf("Error: Please enter a valid integer for the coefficient of  x^%d: \n", num1 - i);
+            while (getchar() != '\n');  /* clear input buffer */
+                }
+            }
+        }
+    
+    row=1;
+    printf("Enter the coefficients for polynomial %d (from highest degree to constant term):\n", row);
+    for (i = 0; i < num2+1; i++) {
+        ret=0;
+        while (ret != 1) {      /* Check the input value is valid integer*/
+        printf("Enter coefficient of x^%d: ", num2 - i);
+        ret=scanf("%d", &parray2D[row][num2 - i]);
+        if (ret != 1) {
+            printf("Error: Please enter a valid integer for the coefficient of  x^%d: \n", num1 - i);
+            while (getchar() != '\n');      /* clear input buffer */
+            }
+        }
+    }
+        
+
+    /* Print polynomials (optional verification)
+    for (row = 0; row < 2; row++) {
+        printf("Polynomial %d: ", row + 1);
+        for (i = 0; i < columnSize; i++) {
+            printf("%d ", parray2D[row][i]);
+        }
+        printf("\n");
+    }
+    */
+}
+
+void DisPolynomials(int **parray2D, int columnSize){
+    int i;
+    /* Print polynomials (optional verification)*/
+    /*for (row = 0; row < 2; row++) {
+        printf("Polynomial %d: ", row + 1);
+        for (i = 0; i < columnSize; i++) {
+            printf("%d ", parray2D[row][i]);
+        }
+        printf("\n");
+    }*/
+
+    printf("Sum of the polynomials is: ");      /* Based on the column to add different row item and print out.*/
+    for (i = 0; i < columnSize; i++) {
+        printf(" %dx^%d ", parray2D[0][i]+parray2D[1][i],i);
+        if(i<(columnSize-1))
+        printf("+");
+    }
+    printf("\n");
+   
+}
+
+void EvaPolynomials(int **parray2D, int columnSize){/* input X vaule and using loop to check the input is valid.*/
+    
+    int i,x,total=0;
+    printf("Enter the value of x to evaluate the sum of the polynomials: ");
+    scanf("%d", &x);
+
+    for (i = 0; i < columnSize; i++) {
+        printf("%dx^%d", parray2D[0][i]+parray2D[1][i],i);
+        if(i<(columnSize-1))
+        printf("+");
+        total=(parray2D[0][i]+parray2D[1][i])*pow(x, i)+total;
+        /*printf("%d",total);*/
+    }
+    printf("\nThe result of the evaluation at x = %d is: %d",x,total);
+    printf("\n");
+}
